@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Corporativo</title>
+    <style>
+        @page {{
+            size: A4;
+            margin: 0;
+        }}
+
+        body {{
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+        }}
+
+        .page {{
+            position: relative;
+            width: 210mm;
+            height: 297mm;
+            background-image: url('http://54.165.210.106:5000/static/imagem.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover; /* Mantém o tamanho original */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Centraliza verticalmente */
+            align-items: center; /* Centraliza horizontalmente */
+            page-break-after: always;
+            padding: 20px;
+        }}
+
+        .container {{
+            text-align: center;
+            width: 100%;
+            margin-top: 600px;
+        }}
+
+        h1 {{
+            color: #003366;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }}
+
+        h2 {{
+            color: #003366;
+            font-size: 2rem;
+            text-align: center;
+            margin-top: 120px;
+            margin-bottom: 50px;
+        }}
+
+        ul {{
+            list-style-type: none;
+            padding: 0;
+            text-align: left;
+            font-size: 1.2rem;
+            color: #003366;
+            margin-left: -30px;
+        }}
+
+        li {{
+            margin: 10px 0;
+            text-align: left;
+        }}
+
+        .page-number {{
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 12px;
+            color: #555;
+        }}
+
+        .table {{
+                width: 80%;
+                border-collapse: collapse;
+            }}
+
+        .table, .table th, .table td {{
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            }}
+
+        .indicator {{
+            margin: 20px 0;
+            font-size: 1.3rem;
+            text-align: left;
+        }}
+
+        .indicator-title {{
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 5px;
+        }}
+
+        .indicator-content {{
+            font-size: 1.1rem;
+            color: #003366;
+        }}
+
+        .indicator-list {{
+            list-style-type: none;
+            margin-top: 10px;
+        }}
+
+        .indicator-list li {{
+            font-size: 1.1rem;
+        }}
+
+    </style>
+</head>
+<body>
+    <!-- Primeira Página -->
+    <div class="page">
+        <div class="container">
+            <h1>Relatório Corporativo - {mes_nome} {ano}</h1>
+        </div>
+        <div class="page-number">1</div>
+    </div>
+
+    <!-- Segunda Página: Sumário -->
+    <div class="page">
+        <h2>Sumário</h2>
+        <ul>
+            <li>1. Indicadores de Vendas ................................. 3</li>
+            <li>2. Análise de Vendas ................................. 4</li>
+            <li>3. Gráfico Combo: Total Vendido x Apostas .............. 5</li>
+        </ul>
+        <div class="page-number">2</div>
+    </div>
+
+    <!-- Terceira Página: Indicadores de Vendas -->
+    <div class="page">
+        <h2>Indicadores de Vendas</h2>
+        <div class="indicator">
+            <span class="indicator-title">Produto mais Vendido:</span>
+            <p class="indicator-content">{produto_mais_vendido[0][0]}</p>
+        </div>
+        <div class="indicator">
+            <span class="indicator-title">Top 5 Produtos:</span>
+            <ul class="indicator-list">
+                {produtos_html}
+            </ul>
+        </div>
+        <div class="indicator">
+            <span class="indicator-title">Operador com Maior Número de Vendas:</span>
+            <p class="indicator-content">{operador_mais_vendas[0][0]}</p>
+        </div>
+        <div class="page-number">3</div>
+    </div>
+
+    <!-- Quarta Página: Análise de Vendas -->
+    <div class="page">
+        <h2>Análise de Vendas</h2>
+        <table class="table">
+            <tr>
+                <th>Data</th>
+                <th>Total Vendido (R$)</th>
+                <th>Apostas</th>
+            </tr>
+            {grafico_html}
+        </table>
+        <div class="page-number">4</div>
+    </div>
+
+    <!-- Quinta Página: Gráfico Combo -->
+    <div class="page">
+        <h2>Gráfico Combo: Total Vendido x Apostas</h2>
+        <img src="http://54.165.210.106:5000/static/grafico_combo.png" alt="Gráfico Combo" style="max-width: 100%; height: auto;"/>
+        <div class="page-number">5</div>
+    </div>
+</body>
+</html>
