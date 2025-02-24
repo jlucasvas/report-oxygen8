@@ -7,7 +7,16 @@
     <style>
         @page {{
             size: A4;
-            margin: 0;
+            margin: 5mm;
+            background-image: url('http://54.165.210.106:5000/static/imagem.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            @bottom-right {{
+                content: counter(page);
+                font-size: 12px;
+                color: #555;
+            }}
         }}
 
         body {{
@@ -19,37 +28,35 @@
 
         .page {{
             position: relative;
-            width: 210mm;
-            height: 297mm;
-            background-image: url('http://54.165.210.106:5000/static/imagem.png');
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: cover; /* Mantém o tamanho original */
+            width: 90%;
+            min-height: 297mm;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Centraliza verticalmente */
-            align-items: center; /* Centraliza horizontalmente */
+            justify-content: flex-start;
+            align-items: center;
             page-break-after: always;
-            padding: 20px;
+            padding: 40px;
         }}
 
         .container {{
             text-align: center;
             width: 100%;
-            margin-top: 600px;
+            margin-top: 100px;
+        }}
+
+        h1, h2 {{
+            color: #003366;
+            text-align: center;
         }}
 
         h1 {{
-            color: #003366;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             margin-bottom: 50px;
         }}
 
         h2 {{
-            color: #003366;
-            font-size: 2rem;
-            text-align: center;
-            margin-top: 120px;
+            font-size: 1.5rem;
+            margin-top: 60px;
             margin-bottom: 50px;
         }}
 
@@ -59,36 +66,30 @@
             text-align: left;
             font-size: 1.2rem;
             color: #003366;
-            margin-left: -30px;
+            margin-left: 30px;
         }}
 
         li {{
             margin: 10px 0;
-            text-align: left;
         }}
 
-        .page-number {{
-            position: absolute;
-            bottom: 20px;
-            right: 30px;
-            font-size: 12px;
-            color: #555;
-        }}
 
         .table {{
-                width: 80%;
-                border-collapse: collapse;
-            }}
+            width: 80%;
+            border-collapse: collapse;
+            margin-top: 40px;
+            page-break-inside: auto;
+        }}
 
         .table, .table th, .table td {{
             border: 1px solid black;
             padding: 8px;
             text-align: left;
-            }}
+        }}
 
         .indicator {{
             margin: 20px 0;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             text-align: left;
         }}
 
@@ -96,10 +97,11 @@
             font-weight: bold;
             color: #003366;
             margin-bottom: 5px;
+            font-size: 13px;
         }}
 
         .indicator-content {{
-            font-size: 1.1rem;
+            font-size: 12px;
             color: #003366;
         }}
 
@@ -109,9 +111,13 @@
         }}
 
         .indicator-list li {{
-            font-size: 1.1rem;
+            font-size: 1.0rem;
         }}
 
+        img {{
+            max-width: 90%;
+            height: auto;
+        }}
     </style>
 </head>
 <body>
@@ -120,59 +126,87 @@
         <div class="container">
             <h1>Relatório Corporativo - {mes_nome} {ano}</h1>
         </div>
-        <div class="page-number">1</div>
     </div>
 
     <!-- Segunda Página: Sumário -->
     <div class="page">
         <h2>Sumário</h2>
         <ul>
-            <li>1. Indicadores de Vendas ................................. 3</li>
-            <li>2. Análise de Vendas ................................. 4</li>
-            <li>3. Gráfico Combo: Total Vendido x Apostas .............. 5</li>
+            <li>1. Indicadores Gerais Financeiros ...................... 3</li>
+            <li>2. Valor Financeiro X Apostas ...................... 4</li>
+            <li>3. Receita e Aposta por Operador ...................... 5</li>
+            <li>4. Receita e Aposta por Ponto de Venda ...................... 6</li>
         </ul>
-        <div class="page-number">2</div>
     </div>
 
-    <!-- Terceira Página: Indicadores de Vendas -->
+    <!-- Terceira Página: Indicadores Gerais Financeiros -->
     <div class="page">
-        <h2>Indicadores de Vendas</h2>
+        <h2>Indicadores Gerais Financeiros</h2>
         <div class="indicator">
-            <span class="indicator-title">Produto mais Vendido:</span>
-            <p class="indicator-content">{produto_mais_vendido[0][0]}</p>
+            <span class="indicator-title">GGR:</span>
+            <p class="indicator-content">{ggr}</p>
         </div>
         <div class="indicator">
-            <span class="indicator-title">Top 5 Produtos:</span>
-            <ul class="indicator-list">
-                {produtos_html}
-            </ul>
+            <span class="indicator-title">Total Financeiro:</span>
+            <p class="indicator-content">{total_financeiro}</p>
         </div>
         <div class="indicator">
-            <span class="indicator-title">Operador com Maior Número de Vendas:</span>
-            <p class="indicator-content">{operador_mais_vendas[0][0]}</p>
+            <span class="indicator-title">Prêmios Prescritos:</span>
+            <p class="indicator-content">{premios_prescritos}</p>
         </div>
-        <div class="page-number">3</div>
+        <div class="indicator">
+            <span class="indicator-title">Quantidade de Apostas:</span>
+            <p class="indicator-content">{qtd_apostas}</p>
+        </div>
+        <div class="indicator">
+            <span class="indicator-title">Total de Prêmios:</span>
+            <p class="indicator-content">{total_prizes}</p>
+        </div>
+        <div class="indicator">
+            <span class="indicator-title">Total IR:</span>
+            <p class="indicator-content">{total_ir}</p>
+        </div>
+        <div class="indicator">
+            <span class="indicator-title">Repasse ao Estado:</span>
+            <p class="indicator-content">{repasse_estado}</p>
+        </div>
+        <div class="indicator">
+            <span class="indicator-title">Comissão de Sessão:</span>
+            <p class="indicator-content">{session_comission}</p>
+        </div>
+        <div class="indicator">
+            <span class="indicator-title">Taxa de Outorga:</span>
+            <p class="indicator-content">{tx_outorga}</p>
+        </div>
+        <div class="indicator">
+            <span class="indicator-title">Quantidade de Operadores:</span>
+            <p class="indicator-content">{qtd_operadores}</p>
+        </div>
     </div>
 
-    <!-- Quarta Página: Análise de Vendas -->
+    <!-- Quarta Página: Gráficos -->
+
     <div class="page">
-        <h2>Análise de Vendas</h2>
-        <table class="table">
-            <tr>
-                <th>Data</th>
-                <th>Total Vendido (R$)</th>
-                <th>Apostas</th>
-            </tr>
-            {grafico_html}
-        </table>
-        <div class="page-number">4</div>
+        <h2>Valor Financeiro X Apostas</h2>
+        <img src="http://54.165.210.106/static/grafico_combo.png" alt="Valor Financeiro X Apostas">
     </div>
 
-    <!-- Quinta Página: Gráfico Combo -->
     <div class="page">
-        <h2>Gráfico Combo: Total Vendido x Apostas</h2>
-        <img src="http://54.165.210.106:5000/static/grafico_combo.png" alt="Gráfico Combo" style="max-width: 100%; height: auto;"/>
-        <div class="page-number">5</div>
+         <h2>Receita por Operador</h2>
+        <img src="http://54.165.210.106/static/receita_operador.png" alt="Gráfico Receita por Permissionário">
+
+        <h2>Aposta por Operador</h2>
+         <img src="http://54.165.210.106/static/aposta_operador.png" alt="Gráfico Aposta por Operador">
     </div>
+
+    <div class="page">
+        <h2>Receita por Loja</h2>
+         <img src="http://54.165.210.106/static/vendas_loja.png" alt="Gráfico Receita por Loja">
+
+        <h2>Aposta por Loja</h2>
+         <img src="http://54.165.210.106/static/apostas_loja.png" alt="Gráfico Aposta por Loja">
+    </div>
+
 </body>
 </html>
+
