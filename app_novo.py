@@ -26,14 +26,76 @@ CARD_VL_FIN_APOSTAS_RF = 110
 CARD_APOSTA_OPERADOR_RF = 111
 CARD_RECEITA_LOJA_RF = 112
 CARD_APOSTA_LOJA_RF = 113
-
+CARD_QT_LOJA_AG_LOT = 147
+CARD_QT_LOJA_PT_VENDA = 148
+CARD_VENDA_LOJA_AG_LOT = 149
+CARD_VENDA_LOJA_PT_VENDA = 150
+CARD_APOSTADORES_ATIVOS = 151
+CARD_VENDAS_POR_PRODUTO = 117
+CARD_VENDAS_POR_OPERADOR = 122
+CARD_JOG_ATIVOS_POR_OPERADOR = 124
+CARD_VENDAS_POR_PERFIL = 118
+CARD_VENDAS_POR_PLATAFORMA = 119
+CARD_VENDAS_POR_MODALIDADE = 120
 
 TOKEN = "2bc69d65-592b-41a9-ba5d-ab69aa3d623b"  # Token obtido na autenticação 
 
 
-def gerar_grafico_linhas(dados, titulo, filename, xlabel, ylabel):
+def gerar_grafico_barras(dados, titulo, filename, xlabel, ylabel, categoria):
     # Criando DataFrame com as colunas corretas
-    df = pd.DataFrame(dados, columns=["Loja", "Data", ylabel])
+    df = pd.DataFrame(dados, columns=[categoria, "Data", ylabel])
+
+    # Convertendo a coluna de data para o formato correto
+    #df["Data"] = pd.to_datetime(df["Data"])
+    # Criando a figura
+    plt.figure(figsize=(12, 6))
+
+    # Usando seaborn para gerar um gráfico de barras empilhadas
+    sns.barplot(data=df, x="Data", y=ylabel, hue=categoria, palette="tab10")
+
+    # Configurando título e rótulos dos eixos
+    plt.title(titulo)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.xticks(rotation=45)
+    plt.grid(axis="y", linestyle="--", alpha=0.7)
+
+    # Salvando o gráfico
+    plt.savefig(filename, bbox_inches="tight")
+    plt.close()
+    return filename
+
+
+def gerar_grafico_barras_categoria(dados, titulo, filename, eixo_x, eixo_y, categoria=None):
+    # Criando DataFrame com as colunas corretas
+    colunas = [eixo_x, eixo_y] if categoria is None else [categoria, eixo_x, eixo_y]
+    df = pd.DataFrame(dados, columns=colunas)
+
+    #Se eixo_x for uma data, converte para datetime
+    # Criando a figura
+    plt.figure(figsize=(12, 6))
+
+    # Se houver categoria, usa hue, senão, gera barras normais
+    if categoria:
+        sns.barplot(data=df, x=eixo_x, y=eixo_y, hue=categoria, palette="tab10")
+    else:
+        sns.barplot(data=df, x=eixo_x, y=eixo_y, color="steelblue")
+
+    # Configurando título e rótulos dos eixos
+    plt.title(titulo)
+    plt.xlabel(eixo_x)
+    plt.ylabel(eixo_y)
+    plt.xticks(rotation=45)
+    plt.grid(axis="y", linestyle="--", alpha=0.7)
+
+    # Salvando o gráfico
+    plt.savefig(filename, bbox_inches="tight")
+    plt.close()
+    return filename
+
+def gerar_grafico_linhas(dados, titulo, filename, xlabel, ylabel, legenda_col):
+    # Criando DataFrame com as colunas corretas
+    df = pd.DataFrame(dados, columns=[legenda_col, "Data", ylabel])
 
     # Convertendo a coluna de data para o formato correto
     df["Data"] = pd.to_datetime(df["Data"])
@@ -42,7 +104,7 @@ def gerar_grafico_linhas(dados, titulo, filename, xlabel, ylabel):
     plt.figure(figsize=(12, 6))
 
     # Usando seaborn para gerar um gráfico de linhas automático
-    sns.lineplot(data=df, x="Data", y=ylabel, hue="Loja", marker="o", palette="tab10")
+    sns.lineplot(data=df, x="Data", y=ylabel, hue=legenda_col, marker="o", palette="tab10")
 
     # Configurando título e rótulos dos eixos
     plt.title(titulo)
@@ -178,7 +240,13 @@ def gerar_relatorio():
     dados_gf_receita_operador=get_metabase_data(CARD_GR_RECEITA_OPERADOR_RF, mes, ano)
     dados_receita_loja=get_metabase_data(CARD_RECEITA_LOJA_RF, mes, ano)
     dados_aposta_loja=get_metabase_data(CARD_APOSTA_LOJA_RF, mes, ano)
-    
+    dados_vendas_por_produto=get_metabase_data(CARD_VENDAS_POR_PRODUTO, mes, ano)
+    dados_vendas_por_operador=get_metabase_data(CARD_VENDAS_POR_OPERADOR, mes, ano)
+    dados_jog_ativos_por_operador=get_metabase_data(CARD_JOG_ATIVOS_POR_OPERADOR, mes, ano)
+    dados_vendas_por_perfil=get_metabase_data(CARD_VENDAS_POR_PERFIL, mes, ano)
+    dados_vendas_por_plataforma=get_metabase_data(CARD_VENDAS_POR_PLATAFORMA, mes, ano)
+    dados_vendas_por_modalidade=get_metabase_data(CARD_VENDAS_POR_MODALIDADE, mes, ano)
+
     indicadores = {
         "ggr": get_metabase_data(CARD_GGR_RF, mes, ano),
         "total_financeiro": get_metabase_data(CARD_TOTAL_FIN_RF, mes, ano),
@@ -189,7 +257,12 @@ def gerar_relatorio():
         "repasse_estado": get_metabase_data(CARD_REPASSE_EST_RF, mes, ano),
         "session_comission": get_metabase_data(CARD_SESSION_COMISSION_RF, mes, ano),
         "tx_outorga": get_metabase_data(CARD_TX_OUTORGA_RF, mes, ano),
-        "qtd_operadores": get_metabase_data(CARD_QT_OPERADORES_RF, mes, ano)
+        "qtd_operadores": get_metabase_data(CARD_QT_OPERADORES_RF, mes, ano),
+        "qtd_lojas_ag_lot": get_metabase_data(CARD_QT_LOJA_AG_LOT, mes, ano),
+        "qtd_lojas_pt_venda": get_metabase_data(CARD_QT_LOJA_PT_VENDA, mes, ano),
+        "venda_loja_ag_lot": get_metabase_data(CARD_VENDA_LOJA_AG_LOT, mes, ano),
+        "venda_loja_pt_venda": get_metabase_data(CARD_VENDA_LOJA_PT_VENDA, mes, ano),
+        "apostadores_ativos": get_metabase_data(CARD_APOSTADORES_ATIVOS, mes, ano)
     }
 
     # Verificar se todos os indicadores foram carregados corretamente
@@ -199,8 +272,17 @@ def gerar_relatorio():
 
     grafico_receita_operador = gerar_grafico_barras_horizontal(dados_gf_receita_operador, "Receita por Operador", "static/receita_operador.png", "Receita (R$)", "Operador")
     grafico_apostas_operador = gerar_grafico_barras_horizontal(dados_apostas_por_operador, "Apostas por Operador", "static/aposta_operador.png", "Apostas", "Operador")
-    grafico_vendas_loja = gerar_grafico_linhas(dados_receita_loja, "Vendas por Loja", "static/vendas_loja.png", "Data", "Vendas")
-    grafico_aposta_loja = gerar_grafico_linhas(dados_aposta_loja, "Apostas por Loja", "static/apostas_loja.png", "Data", "Apostas")
+    grafico_vendas_loja = gerar_grafico_linhas(dados_receita_loja, "Vendas por Loja", "static/vendas_loja.png", "Data", "Vendas", "Loja")
+    grafico_aposta_loja = gerar_grafico_linhas(dados_aposta_loja, "Apostas por Loja", "static/apostas_loja.png", "Data", "Apostas", "Loja")
+    grafico_vendas_produto = gerar_grafico_linhas(dados_vendas_por_produto, "Vendas por Produto", "static/vendas_produto.png", "Data", "Vendas", "Produto")
+    grafico_vendas_por_operador = gerar_grafico_barras(dados_vendas_por_operador, "Vendas por Operador", "static/vendas_operador.png", "Data", "Vendas", "Operador")
+    grafico_jog_ativos_por_operador = gerar_grafico_barras_categoria(dados_jog_ativos_por_operador, "Jogadores Ativos por Operador", "static/jog_ativos_operador.png", "Operador", "Jogadores")
+    grafico_vendas_por_perfil = gerar_grafico_barras(dados_vendas_por_perfil, "Vendas por Perfil de Jogador", "static/vendas_perfil.png", "Data", "Vendas", "Perfil")
+    grafico_vendas_por_plataforma = gerar_grafico_barras(dados_vendas_por_plataforma, "Vendas por Plataforma", "static/vendas_plataforma.png", "Data", "Vendas", "Plataforma")
+    grafico_vendas_por_modalidade = gerar_grafico_barras(dados_vendas_por_modalidade, "Vendas por Modalidade", "static/vendas_modalidade.png", "Data", "Vendas", "Modalidade")
+
+
+
 
     # Criar conteúdo HTML
     with open('templates/relatorio_template.html', 'r', encoding='utf-8') as file:
@@ -208,8 +290,6 @@ def gerar_relatorio():
             mes_nome=mes_nome,
             ano=ano,
             grafico_combo_fin_apostas=gerar_grafico_combo(dados_total_liq_apostas),
-            #grafico_apostas_operador=gerar_grafico_barras_horizontal(dados_apostas_por_operador, CARD_APOSTA_OPERADOR_RF),
-            #grafico_barras_horizontal=gerar_grafico_barras_horizontal(dados_gf_receita_operador,CARD_GR_RECEITA_OPERADOR_RF),
             **{chave: indicadores[chave][0][0] for chave in indicadores}
         )
 

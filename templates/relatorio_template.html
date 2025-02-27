@@ -136,53 +136,47 @@
             <li>2. Valor Financeiro X Apostas ...................... 4</li>
             <li>3. Receita e Aposta por Operador ...................... 5</li>
             <li>4. Receita e Aposta por Ponto de Venda ...................... 6</li>
+            <li>5. Indicadores Gerais de Venda ...................... 7</li>
+            <li>6. Quantidade de Vendas X Produtos ...................... 8</li>
+            <li>7. Vendas X Operador ...................... 9</li>
+            <li>8. Jogadores Ativos X Operador ...................... 10</li>
+            <li>9. Vendas X Perfil ...................... 11</li>
+            <li>10. Vendas X Plataforma ...................... 12</li>
+            <li>11. Vendas X Modalidade ...................... 13</li>
         </ul>
     </div>
 
-    <!-- Terceira Página: Indicadores Gerais Financeiros -->
-    <div class="page">
-        <h2>Indicadores Gerais Financeiros</h2>
-        <div class="indicator">
-            <span class="indicator-title">GGR:</span>
-            <p class="indicator-content">{ggr}</p>
-        </div>
-        <div class="indicator">
-            <span class="indicator-title">Total Financeiro:</span>
-            <p class="indicator-content">{total_financeiro}</p>
-        </div>
-        <div class="indicator">
-            <span class="indicator-title">Prêmios Prescritos:</span>
-            <p class="indicator-content">{premios_prescritos}</p>
-        </div>
-        <div class="indicator">
-            <span class="indicator-title">Quantidade de Apostas:</span>
-            <p class="indicator-content">{qtd_apostas}</p>
-        </div>
-        <div class="indicator">
-            <span class="indicator-title">Total de Prêmios:</span>
-            <p class="indicator-content">{total_prizes}</p>
-        </div>
-        <div class="indicator">
-            <span class="indicator-title">Total IR:</span>
-            <p class="indicator-content">{total_ir}</p>
-        </div>
-        <div class="indicator">
-            <span class="indicator-title">Repasse ao Estado:</span>
-            <p class="indicator-content">{repasse_estado}</p>
-        </div>
-        <div class="indicator">
-            <span class="indicator-title">Comissão de Sessão:</span>
-            <p class="indicator-content">{session_comission}</p>
-        </div>
-        <div class="indicator">
-            <span class="indicator-title">Taxa de Outorga:</span>
-            <p class="indicator-content">{tx_outorga}</p>
-        </div>
-        <div class="indicator">
-            <span class="indicator-title">Quantidade de Operadores:</span>
-            <p class="indicator-content">{qtd_operadores}</p>
-        </div>
-    </div>
+<!-- Terceira Página: Indicadores Gerais Financeiros -->
+<div class="page">
+    <h2>Indicadores Gerais Financeiros</h2>
+    <p>
+        No mês de <strong>{mes_nome}</strong> de <strong>{ano}</strong>, o setor de apostas e jogos apresentou um desempenho significativo, 
+        com um <strong>GGR (Gross Gaming Revenue)</strong> de <strong>{ggr}</strong>, refletindo a movimentação financeira 
+        gerada pelas atividades da plataforma. O <strong>total financeiro</strong> alcançado foi de <strong>{total_financeiro}</strong>, 
+        consolidando o volume de transações realizadas ao longo do período.
+    </p>
+    <p>
+        Os jogadores realizaram um total de <strong>{qtd_apostas}</strong> apostas, evidenciando o nível de engajamento e participação dos usuários. 
+        Como resultado, os <strong>prêmios distribuídos</strong> totalizaram <strong>{total_prizes}</strong>, enquanto os 
+        <strong>prêmios prescritos</strong>, ou seja, aqueles que não foram resgatados dentro do prazo estabelecido, somaram 
+        <strong>{premios_prescritos}</strong>.
+    </p>
+    <p>
+        No que diz respeito às obrigações fiscais e regulatórias, o <strong>Total de Imposto de Renda retido</strong> foi de 
+        <strong>{total_ir}</strong>, enquanto o <strong>repasse ao estado</strong>, contribuindo para a arrecadação pública, atingiu 
+        <strong>{repasse_estado}</strong>. Além disso, a <strong>comissão de sessão</strong>, representando a participação financeira 
+        de parceiros e intermediários, foi de <strong>{session_comission}</strong>.
+    </p>
+    <p>
+        A <strong>Taxa de Outorga</strong>, que corresponde a uma fração sobre o faturamento, foi de <strong>{tx_outorga}</strong>, reforçando 
+        o compromisso com a regulamentação do setor. Por fim, a operação foi sustentada por um total de <strong>{qtd_operadores}</strong> 
+        operadores, garantindo a gestão e continuidade das atividades dentro da plataforma.
+    </p>
+    <p>
+        Esse panorama reflete a performance do segmento no período analisado, oferecendo insights valiosos para a tomada de decisões estratégicas 
+        e aprimoramento das operações.
+    </p>
+</div>
 
     <!-- Quarta Página: Gráficos -->
 
@@ -206,6 +200,58 @@
         <h2>Aposta por Loja</h2>
          <img src="http://54.165.210.106/static/apostas_loja.png" alt="Gráfico Aposta por Loja">
     </div>
+
+    <!-- Quinta página: Indicadores de Venda -->
+
+    <div class="page">
+    <h2>Indicadores Gerais de Venda</h2>
+    <p>
+        No mês de <strong>{mes_nome}</strong> de <strong>{ano}</strong>, o setor de apostas e jogos apresentou um desempenho significativo,
+        com um <strong>Total de Apostadores Ativos</strong> de <strong>{apostadores_ativos}</strong>. Quando analisados os locais físicos de venda
+        verificam-se <strong>{qtd_lojas_pt_venda} pontos de venda</strong> que totalizam um montante de <strong>{venda_loja_pt_venda}</strong>, enquanto para <strong>Agências Lotéricas</strong>
+        verificam-se <strong>{qtd_lojas_ag_lot} Agências</strong> totalizando um montante de <strong>{venda_loja_ag_lot}</strong>.
+    </p>
+    </div>
+
+    <div class="page">
+        <h2>Quantidade de Vendas X Produto</h2>
+        <img src="http://54.165.210.106/static/vendas_produto.png" alt="Vendas por Produto">
+    </div>
+
+
+    <div class="page">
+        <h2>Vendas X Operador</h2>
+        <img src="http://54.165.210.106/static/vendas_operador.png" alt="Vendas por Operador">
+    </div>
+
+    <div class="page">
+        <h2>Quantidade de Jogadores Ativos X Operador</h2>
+        <img src="http://54.165.210.106/static/jog_ativos_operador.png" alt="Jogadores Ativos por Operador">
+    </div>
+
+    <div class="page">
+        <h2>Vendas X Perfil</h2>
+        <img src="http://54.165.210.106/static/vendas_perfil.png" alt="Vendas por Perfil">
+    </div>
+
+    <div class="page">
+        <h2>Vendas X Plataforma</h2>
+        <img src="http://54.165.210.106/static/vendas_plataforma.png" alt="Vendas por Plataforma">
+    </div>
+
+    <div class="page">
+        <h2>Vendas X Modalidade</h2>
+        <img src="http://54.165.210.106/static/vendas_modalidade.png" alt="Vendas por Modalidade">
+    </div>
+
+
+
+
+
+
+
+
+
 
 </body>
 </html>
