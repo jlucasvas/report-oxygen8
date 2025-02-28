@@ -12,7 +12,7 @@ app = Flask(__name__)
 # Substitua com as informações da sua instância Metabase
 METABASE_URL = "https://bi.besquare.com.br"  # URL do seu Metabase 
 CARD_GGR_RF = 99
-CARD_TOTAL_FIN_RF = 100 
+CARD_TOTAL_FIN_RF = 100
 CARD_PREMIO_PRESC_RF = 101
 CARD_QTD_APOSTAS_RF = 102
 CARD_TOTAL_PRIZES_RF = 103
@@ -26,6 +26,7 @@ CARD_VL_FIN_APOSTAS_RF = 110
 CARD_APOSTA_OPERADOR_RF = 111
 CARD_RECEITA_LOJA_RF = 112
 CARD_APOSTA_LOJA_RF = 113
+CARD_TOTAL_SALDO = 146
 CARD_QT_LOJA_AG_LOT = 147
 CARD_QT_LOJA_PT_VENDA = 148
 CARD_VENDA_LOJA_AG_LOT = 149
@@ -37,9 +38,21 @@ CARD_JOG_ATIVOS_POR_OPERADOR = 124
 CARD_VENDAS_POR_PERFIL = 118
 CARD_VENDAS_POR_PLATAFORMA = 119
 CARD_VENDAS_POR_MODALIDADE = 120
+CARD_ALERTAS_TOTAIS = 152
+CARD_ALERTAS_CRITICOS = 153
+CARD_ALERTAS_URGENTES = 154
+CARD_ALERTAS_NORMAIS = 155
+CARD_ALERTAS_OPERADOR_EVOLUTIVO = 156
+CARD_ALERTAS_OPERADOR_SEVERIDADE = 157
+CARD_ALERTAS_ORIGEM = 158
+CARD_ALERTA_DETALHADO = 159
+CARD_SALDO_APOSTADORES_OPERADOR = 160
+CARD_APOSTADOR_IDADE_GENERO = 161
+CARD_APOSTA_PREMIADA = 162
+CARD_APOSTADOR_GENERO = 164
+CARD_LOJA_DETALHADO = 165
 
 TOKEN = "2bc69d65-592b-41a9-ba5d-ab69aa3d623b"  # Token obtido na autenticação 
-
 
 def gerar_grafico_barras(dados, titulo, filename, xlabel, ylabel, categoria):
     # Criando DataFrame com as colunas corretas
@@ -66,27 +79,29 @@ def gerar_grafico_barras(dados, titulo, filename, xlabel, ylabel, categoria):
     return filename
 
 
-def gerar_grafico_barras_categoria(dados, titulo, filename, eixo_x, eixo_y, categoria=None):
+def gerar_grafico_barras_categoria(dados, titulo, filename, eixo_x, eixo_y, legenda=None):
     # Criando DataFrame com as colunas corretas
-    colunas = [eixo_x, eixo_y] if categoria is None else [categoria, eixo_x, eixo_y]
+    colunas = [eixo_x, eixo_y] if legenda is None else [eixo_x, eixo_y, legenda]
     df = pd.DataFrame(dados, columns=colunas)
 
-    #Se eixo_x for uma data, converte para datetime
     # Criando a figura
     plt.figure(figsize=(12, 6))
 
-    # Se houver categoria, usa hue, senão, gera barras normais
-    if categoria:
-        sns.barplot(data=df, x=eixo_x, y=eixo_y, hue=categoria, palette="tab10")
+    # Gerando gráfico de barras horizontal com legenda para diferentes categorias
+    if legenda:
+        sns.barplot(data=df, y=eixo_x, x=eixo_y, hue=legenda, dodge=True, palette="tab10")
     else:
-        sns.barplot(data=df, x=eixo_x, y=eixo_y, color="steelblue")
+        sns.barplot(data=df, y=eixo_x, x=eixo_y, color="steelblue")
 
     # Configurando título e rótulos dos eixos
     plt.title(titulo)
-    plt.xlabel(eixo_x)
-    plt.ylabel(eixo_y)
-    plt.xticks(rotation=45)
-    plt.grid(axis="y", linestyle="--", alpha=0.7)
+    plt.xlabel(eixo_y)
+    plt.ylabel(eixo_x)
+    plt.grid(axis="x", linestyle="--", alpha=0.7)
+
+    # Ajustando a legenda caso haja múltiplas categorias
+    if legenda:
+        plt.legend(title=legenda)
 
     # Salvando o gráfico
     plt.savefig(filename, bbox_inches="tight")
@@ -199,11 +214,32 @@ def get_metabase_data(card_id, mes, ano):
         print(f"Erro ao obter dados do Metabase (Card {card_id}): {e}")
         return None
 
-def formatar_valor(valor, financeiro=False):
-    if financeiro:
-        return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    else:
-        return f"{valor:,}".replace(",", "X").replace(".", ",").replace("X", ".")
+def gerar_tabela_html(dados):
+    if not dados:
+        return "<p>Nenhum dado disponível</p>"
+
+    # Se os dados forem uma lista de dicionários, pega os cabeçalhos das chaves
+    if isinstance(dados[0], dict):
+        colunas = list(dados[0].keys())
+        linhas = [[linha[col] for col in colunas] for linha in dados]
+    else:  
+        # Se os dados forem uma lista de listas, assume que a primeira linha contém os cabeçalhos
+        colunas = [f"Coluna {i+1}" for i in range(len(dados[0]))]  # Gera nomes genéricos
+        linhas = dados  # As próprias linhas já estão no formato correto
+
+    # Monta a tabela HTML
+    html = "<table border='1'>"
+    
+    # Cabeçalho
+    html += "<tr>" + "".join(f"<th>{col}</th>" for col in colunas) + "</tr>"
+    
+    # Linhas de dados
+    for linha in linhas:
+        html += "<tr>" + "".join(f"<td>{valor}</td>" for valor in linha) + "</tr>"
+
+    html += "</table>"
+    
+    return html
 
 @app.route('/')
 def index():
@@ -246,6 +282,16 @@ def gerar_relatorio():
     dados_vendas_por_perfil=get_metabase_data(CARD_VENDAS_POR_PERFIL, mes, ano)
     dados_vendas_por_plataforma=get_metabase_data(CARD_VENDAS_POR_PLATAFORMA, mes, ano)
     dados_vendas_por_modalidade=get_metabase_data(CARD_VENDAS_POR_MODALIDADE, mes, ano)
+    dados_alertas_operador_evolutivo=get_metabase_data(CARD_ALERTAS_OPERADOR_EVOLUTIVO, mes, ano)
+    dados_alertas_operador_severidade=get_metabase_data(CARD_ALERTAS_OPERADOR_SEVERIDADE, mes, ano)
+    dados_alertas_origem=get_metabase_data(CARD_ALERTAS_ORIGEM, mes, ano)
+    #dados_alertas_detalhado=get_metabase_data(CARD_ALERTA_DETALHADO, mes, ano)
+    dados_saldo_apostadores_operador=get_metabase_data(CARD_SALDO_APOSTADORES_OPERADOR, mes, ano)
+    dados_apostador_idade_genero=get_metabase_data(CARD_APOSTADOR_IDADE_GENERO, mes, ano)
+    dados_aposta_premiada=get_metabase_data(CARD_APOSTA_PREMIADA, mes, ano)
+    dados_apostador_genero=get_metabase_data(CARD_APOSTADOR_GENERO, mes, ano)
+    dados_loja_detalhado=get_metabase_data(CARD_LOJA_DETALHADO, mes, ano)
+
 
     indicadores = {
         "ggr": get_metabase_data(CARD_GGR_RF, mes, ano),
@@ -262,7 +308,12 @@ def gerar_relatorio():
         "qtd_lojas_pt_venda": get_metabase_data(CARD_QT_LOJA_PT_VENDA, mes, ano),
         "venda_loja_ag_lot": get_metabase_data(CARD_VENDA_LOJA_AG_LOT, mes, ano),
         "venda_loja_pt_venda": get_metabase_data(CARD_VENDA_LOJA_PT_VENDA, mes, ano),
-        "apostadores_ativos": get_metabase_data(CARD_APOSTADORES_ATIVOS, mes, ano)
+        "apostadores_ativos": get_metabase_data(CARD_APOSTADORES_ATIVOS, mes, ano),
+        "alertas_totais": get_metabase_data(CARD_ALERTAS_TOTAIS, mes, ano),
+        "alertas_criticos": get_metabase_data(CARD_ALERTAS_CRITICOS, mes, ano),
+        "alertas_urgentes": get_metabase_data(CARD_ALERTAS_URGENTES, mes, ano),
+        "alertas_normais": get_metabase_data(CARD_ALERTAS_NORMAIS, mes, ano),
+        "total_saldo": get_metabase_data(CARD_TOTAL_SALDO, mes, ano)
     }
 
     # Verificar se todos os indicadores foram carregados corretamente
@@ -280,8 +331,13 @@ def gerar_relatorio():
     grafico_vendas_por_perfil = gerar_grafico_barras(dados_vendas_por_perfil, "Vendas por Perfil de Jogador", "static/vendas_perfil.png", "Data", "Vendas", "Perfil")
     grafico_vendas_por_plataforma = gerar_grafico_barras(dados_vendas_por_plataforma, "Vendas por Plataforma", "static/vendas_plataforma.png", "Data", "Vendas", "Plataforma")
     grafico_vendas_por_modalidade = gerar_grafico_barras(dados_vendas_por_modalidade, "Vendas por Modalidade", "static/vendas_modalidade.png", "Data", "Vendas", "Modalidade")
-
-
+    grafico_alertas_operador = gerar_grafico_linhas(dados_alertas_operador_evolutivo, "Alertas por Operador", "static/alertas_operador.png", "Data", "Alertas", "Operador")
+    grafico_alertas_severidade = gerar_grafico_barras_categoria(dados_alertas_operador_severidade, "Alertas por Operador e Severidade", "static/alertas_severidade.png", "Operador", "Alertas", "Severidade")
+    grafico_alertas_origem = gerar_grafico_barras_categoria(dados_alertas_origem, "Alertas por Operador e Origem", "static/alertas_origem.png", "Operador", "Alertas", "Origem")
+    grafico_saldo_apostadores_operador = gerar_grafico_barras_categoria(dados_saldo_apostadores_operador, "Saldo de Apostadores por Operador", "static/saldo_operador.png", "Operador", "Saldo")
+    grafico_apostador_idade_genero = gerar_grafico_barras_categoria(dados_apostador_idade_genero, "Apostadores por Idade e Gênero", "static/apostador_idade_genero.png", "Apostadores", "Idade", "Gênero")
+    grafico_aposta_premiada = gerar_grafico_barras_categoria(dados_aposta_premiada, "Apostas Premiadas", "static/apostas_premiadas.png", "Operador", "Apostas")
+    
 
 
     # Criar conteúdo HTML
@@ -289,7 +345,6 @@ def gerar_relatorio():
         html_content = file.read().format(
             mes_nome=mes_nome,
             ano=ano,
-            grafico_combo_fin_apostas=gerar_grafico_combo(dados_total_liq_apostas),
             **{chave: indicadores[chave][0][0] for chave in indicadores}
         )
 
